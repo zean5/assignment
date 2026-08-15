@@ -104,6 +104,10 @@ export default function Dashboard({ students }: { students?: any[] }) {
                         />
                         {form.errors.email && <p className="text-sm text-red-600">{form.errors.email}</p>}  
                     </div>
+
+
+
+                    
                     <div className="flex gap-2">
                         <Button type="submit" disabled={form.processing}>{selectedId ? 'Update Student' : 'Save Student'}</Button>
                         {selectedId && (
@@ -111,6 +115,12 @@ export default function Dashboard({ students }: { students?: any[] }) {
                         )}
                     </div>
                 </form>
+
+
+
+
+
+
                 {/* Results side */}
                 <div className="mt-4">
                     <h2 className="text-lg font-medium">Students List</h2>

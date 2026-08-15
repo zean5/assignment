@@ -1,19 +1,29 @@
 import { Head } from '@inertiajs/react';
+import { Inertia } from '@inertiajs/inertia';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { dashboard } from '@/routes';
+import React, { useState } from 'react';
 
 
-export default function Dashboard() {
+export default function Dashboard({ students }: { students?: any[] }) {
     const form = useForm({ student_id: "", name: "", course: "", year_level: "", email: "" });
+    const [selectedId, setSelectedId] = useState<number | null>(null);
 
     function submit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (selectedId) {
+            form.put(`/students/${selectedId}`, {
+                onSuccess: () => { form.reset(); setSelectedId(null); }
+            });
+            return;
+        }
+
         form.post('/students', {
             onSuccess: () => form.reset(),
-    }); 
+        });
     }
     
     return (
@@ -94,9 +104,44 @@ export default function Dashboard() {
                         />
                         {form.errors.email && <p className="text-sm text-red-600">{form.errors.email}</p>}  
                     </div>
-                    <Button type="submit" disabled={form.processing}>Save Student</Button>
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={form.processing}>{selectedId ? 'Update Student' : 'Save Student'}</Button>
+                        {selectedId && (
+                            <Button type="button" variant="secondary" onClick={() => { form.reset(); setSelectedId(null); }}>Cancel</Button>
+                        )}
+                    </div>
                 </form>
-
+                {/* Results side */}
+                <div className="mt-4">
+                    <h2 className="text-lg font-medium">Students List</h2>
+                    <div className="space-y-2 mt-2">
+                        {(students || []).map((s: any) => (
+                            <div key={s.id} className="flex items-center justify-between rounded border p-2">
+                                <div>
+                                    <div className="font-semibold">{s.name}</div>
+                                    <div className="text-sm text-muted-foreground">{s.student_id} • {s.course} • {s.year_level}</div>
+                                    <div className="text-sm text-muted-foreground">{s.email}</div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => {
+                                        // populate form for editing
+                                        form.setData('student_id', String(s.student_id));
+                                        form.setData('name', s.name);
+                                        form.setData('course', s.course);
+                                        form.setData('year_level', s.year_level);
+                                        form.setData('email', s.email);
+                                        setSelectedId(s.id);
+                                    }}>Update</Button>
+                                    <Button size="sm" variant="destructive" onClick={() => {
+                                        if (!confirm('Delete this student?')) return;
+                                        form.delete(`/students/${s.id}`, { onSuccess: () => Inertia.reload() });
+                                    }}>Delete</Button>
+                                </div>
+                            </div>
+                        ))}
+                        {(!students || students.length === 0) && <div className="text-sm text-muted-foreground">No students yet.</div>}
+                    </div>
+                </div>
 
 
             </div>

@@ -22,7 +22,7 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'student_id' => ['required', 'numeric', 'digits_between:1,10'],
+            'student_id' => ['required', 'numeric', 'min:0'],
             'name' => ['required', 'string', 'max:100'],
             'course' => ['required', 'string', 'max:50'],
             'year_level' => ['required', 'string', 'max:10'],
@@ -48,7 +48,7 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $data = $request->validate([
-            'student_id' => ['required', 'numeric', 'digits_between:1,10'],
+            'student_id' => ['required', 'numeric', 'min:0'],
             'name' => ['required', 'string', 'max:100'],
             'course' => ['required', 'string', 'max:50'],
             'year_level' => ['required', 'string', 'max:10'],

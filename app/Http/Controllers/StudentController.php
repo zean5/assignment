@@ -13,31 +13,24 @@ class StudentController extends Controller
      */
     public function index()
     {
-        return Inertia::render('dashboard',['students'=>Student::query()->latest()->get()]);
+        return Inertia::render('dashboard', ['students' => Student::query()->latest()->get()]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      */
-    // public function create()
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Store a newly created resource in storage.
-    //  */
     public function store(Request $request)
     {
-        $data=$request->validate([
-            'student_id'=>'required|unique:students,student_id',
-            'name'=>'required',
-            'course'=>'required',
-            'year_level'=>'required|integer',
-            'email'=>'required|email|unique:students,email',
+        $data = $request->validate([
+            'student_id' => ['required', 'numeric', 'digits_between:1,10'],
+            'name' => ['required', 'string', 'max:100'],
+            'course' => ['required', 'string', 'max:50'],
+            'year_level' => ['required', 'string', 'max:10'],
+            'email' => ['required', 'email', 'string', 'max:100'],
         ]);
+
         Student::create($data);
-        return redirect()->route('database');
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -46,31 +39,24 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student->show();
-        return redirect()->route('database');
+        return redirect()->route('dashboard');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified resource in storage.
      */
-    // public function edit(Student $student)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
     public function update(Request $request, Student $student)
     {
-        $data=$request->validate([
-            'student_id'=>'required|unique:students,student_id,'.$student->id,
-            'name'=>'required',
-            'course'=>'required',
-            'year_level'=>'required|integer',
-            'email'=>'required|email|unique:students,email,'.$student->id,
+        $data = $request->validate([
+            'student_id' => ['required', 'numeric', 'digits_between:1,10'],
+            'name' => ['required', 'string', 'max:100'],
+            'course' => ['required', 'string', 'max:50'],
+            'year_level' => ['required', 'string', 'max:10'],
+            'email' => ['required', 'email', 'string', 'max:100'],
         ]);
+
         $student->update($data);
-        return redirect()->route('database');
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -79,6 +65,7 @@ class StudentController extends Controller
     public function destroy(Student $student)
     {
         $student->delete();
-        return redirect()->route('database');
+
+        return redirect()->route('dashboard');
     }
 }
